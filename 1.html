@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>致那个爱笑的女孩 | 元旦快乐</title>
+    <style>
+        :root {
+            /* 莫兰迪色系变量定义 */
+            --dusty-blue: #7898af;     /* 雾霾蓝 */
+            --muted-lavender: #b0b1c7; /* 烟灰紫 */
+            --slate-grey: #848ca0;    /* 冷岩灰 */
+            --misty-rose: #ffe4e1;    /* 枯玫瑰 */
+            --pale-sand: #f0f0f0;     /* 米砂色 */
+            --warm-beige: #e8e0d8;    /* 温暖米色 */
+            --soft-gold: #d4c4a8;     /* 柔和金色 */
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --shadow: rgba(0, 0, 0, 0.1);
+            --shadow-light: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', 'Times New Roman', '宋体', 'SimSun', serif;
+            background: linear-gradient(180deg, var(--dusty-blue), var(--slate-grey));
+            color: var(--pale-sand);
+            overflow-x: hidden;
+            min-height: 100vh;
+            user-select: none;
+            -webkit-user-select: none;
+            cursor: default;
+        }
+
+        /* 噪点纹理层 */
+        .noise {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            mix-blend-mode: overlay;
+        }
+
+        /* 极光容器 */
+        .aurora-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        /* 极光光斑 */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.4;
+            animation: float 30s infinite ease-in-out;
+        }
+
+        .blob-1 {
+            top: -20%; left: -20%; width: 60vw; height: 60vw;
+            background: var(--muted-lavender);
+            animation-duration: 35s;
+        }
+
+        .blob-2 {
+            bottom: -30%; right: -30%; width: 70vw; height: 70vw;
+            background: var(--dusty-blue);
+            animation-duration: 40s;
+            animation-delay: -10s;
+        }
+
+        .blob-3 {
+            top: 50%; left: -10%; width: 40vw; height: 40vw;
+            background: var(--slate-grey);
+            animation-duration: 45s;
+            animation-delay: -20s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+            25% { transform: translate(50px, -30px) scale(1.1) rotate(90deg); }
+            50% { transform: translate(-20px, 50px) scale(0.9) rotate(180deg); }
+            75% { transform: translate(30px, 20px) scale(1.05) rotate(270deg); }
+            100% { transform: translate(0, 0) scale(1) rotate(360deg); }
+        }
+
+        /* 主内容容器 */
+        .container {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        /* 卡片样式 */
+        .card {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 3rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px var(--shadow);
+            text-align: center;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .card h1 {
+            font-size: 4rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            letter-spacing: 0.1em;
+            color: var(--misty-rose);
+        }
+
+        .card .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .card p {
+            font-size: 1.2rem;
+            line-height: 2.2;
+            margin-bottom: 1.5rem;
+            opacity: 0.95;
+        }
+
+        .card .highlight {
+            color: var(--muted-lavender);
+            font-style: italic;
+        }
+
+        /* 樱花画布 */
+        #sakuraCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* 音频控制按钮 */
+        .audio-control {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 20;
+            width: 60px;
+            height: 60px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px var(--shadow);
+        }
+
+        .audio-control:hover {
+            transform: scale(1.1);
+            background: var(--glass-border);
+        }
+
+        .audio-control::before {
+            content: '♪';
+            font-size: 1.5rem;
+            color: var(--pale-sand);
+        }
+
+        .audio-control.playing::before {
+            content: '♫';
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* 鼠标跟随效果 */
+        .cursor-trail {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background: var(--misty-rose);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 15;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* 点击涟漪效果 */
+        .ripple {
+            position: fixed;
+            border-radius: 50%;
+            background: var(--muted-lavender);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 15;
+            animation: ripple 1s ease-out;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0);
+                opacity: 0.6;
+            }
+            100% {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* 星星背景 */
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background: var(--pearl-white);
+            border-radius: 50%;
+            animation: twinkle 3s infinite ease-in-out;
+            box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+        }
+
+        /* 心形浮动元素（改为更小、更含蓄的心符号） */
+        .hearts {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 3;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .heart {
+            position: absolute;
+            color: var(--misty-rose);
+            font-size: 0.9rem; /* 更小、更低调 */
+            animation: float-up 9s linear infinite;
+            opacity: 0.45;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.06));
+        }
+
+        @keyframes float-up {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* 气泡效果 */
+        .bubbles {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .bubble {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: bubble-rise 6s linear infinite;
+        }
+
+        .star:nth-child(odd) {
+            animation-delay: -1s;
+        }
+
+        .star:nth-child(even) {
+            animation-delay: -2s;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 0.9; transform: scale(1.3); }
+        }
+
+        @keyframes bubble-rise {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-100px) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* 倒计时样式 */
+        .countdown {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .countdown-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--soft-gold);
+            display: inline-block;
+            margin: 0 1rem;
+        }
+
+        .countdown-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 0.5rem;
+        }
+
+        /* 时间线样式 */
+        .timeline {
+            position: relative;
+            max-width: 500px;
+            margin: 2rem auto;
+        }
+
+        .timeline-item {
+            margin: 2rem 0;
+            padding-left: 2rem;
+            position: relative;
+            opacity: 0;
+            transform: translateX(-30px);
+            transition: all 1s ease;
+        }
+
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 10px;
+            width: 12px;
+            height: 12px;
+            background: var(--muted-lavender);
+            border-radius: 50%;
+            border: 2px solid var(--pale-sand);
+        }
+
+        .timeline-year {
+            font-size: 1.2rem;
+            color: var(--soft-gold);
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-content {
+            font-size: 1rem;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        /* 愿望清单样式 */
+        .wishlist {
+            max-width: 500px;
+            margin: 2rem auto;
+        }
+
+        .wish-item {
+            display: flex;
+            align-items: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease;
+        }
+
+        .wish-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .wish-checkbox {
+            width: 20px;
+            height: 20px;
+            margin-right: 1rem;
+            border: 2px solid var(--muted-lavender);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .wish-checkbox.checked {
+            background: var(--muted-lavender);
+        }
+
+        .wish-checkbox.checked::after {
+            content: '✓';
+            color: var(--pale-sand);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wish-text {
+            flex: 1;
+            font-size: 1rem;
+            opacity: 0.95;
+        }
+
+        /* 礼物盒动画 */
+        .gift-container {
+            position: fixed;
+            bottom: 6rem;
+            right: 2rem;
+            z-index: 20;
+        }
+
+        .gift-box {
+            width: 70px;
+            height: 70px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gift-box:hover {
+            transform: scale(1.1);
+            background: var(--glass-border);
+        }
+
+        .gift-box::before {
+            content: '🎁';
+            font-size: 2rem;
+            z-index: 2;
+            position: relative;
+        }
+
+        .gift-box.clicked::before {
+            animation: bounce 0.6s ease;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .gift-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--misty-rose);
+            border-radius: 50%;
+            animation: particle-explode 1s ease-out forwards;
+        }
+
+        @keyframes particle-explode {
+            0% {
+                transform: scale(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1) rotate(360deg) translate(var(--tx), var(--ty));
+                opacity: 0;
+            }
+        }
+
+        /* 照片墙样式 */
+        .photo-wall {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .photo-item {
+            aspect-ratio: 1;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0.6rem;
+            gap: 0.6rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: scale(0.8) rotate(10deg);
+        }
+
+        .photo-item.visible {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+        }
+
+        .photo-item:hover {
+            transform: scale(1.05);
+            background: var(--glass-border);
+        }
+        /* Polaroid-style mini photo inside photo-item */
+        .polaroid-img {
+            width: 100%;
+            height: 0;
+            padding-bottom: 75%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(245,245,245,0.95));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem; /* 更大的表情尺寸 */
+            color: #666;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+        }
+
+        .polaroid-caption {
+            width: 100%;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--pale-sand);
+            opacity: 0.9;
+            margin-top: 0.2rem;
+        }
+
+        /* 温馨提示样式 */
+        .hint-message {
+            position: fixed;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            padding: 1rem 1.5rem;
+            font-size: 0.9rem;
+            color: var(--misty-rose);
+            text-align: center;
+            box-shadow: 0 8px 25px var(--shadow);
+            z-index: 25;
+            opacity: 0;
+            animation: hint-appear 1s ease-out 2s forwards;
+        }
+
+        @keyframes hint-appear {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .card {
+                margin: 1rem;
+                padding: 2rem;
+            }
+
+            .card h1 {
+                font-size: 2.5rem;
+            }
+
+            .card p {
+                font-size: 1rem;
+                line-height: 2;
+            }
+
+            .photo-wall {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+
+            .photo-item {
+                font-size: 2rem;
+            }
+
+            .hint-message {
+                bottom: 0.5rem;
+                padding: 0.8rem 1.2rem;
+                font-size: 0.8rem;
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 噪点纹理层 -->
+    <div class="noise"></div>
+
+    <!-- 极光背景 -->
+    <div class="aurora-container">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- 樱花画布 -->
+    <canvas id="sakuraCanvas"></canvas>
+
+    <!-- 鼠标跟随效果容器 -->
+    <div id="cursor-container"></div>
+
+    <!-- 星星背景 -->
+    <div class="stars" id="stars"></div>
+
+    <!-- 心形浮动 -->
+    <div class="hearts" id="hearts"></div>
+
+    <!-- 气泡效果 -->
+    <div class="bubbles" id="bubbles"></div>
+
+    <!-- 主内容 -->
+    <div class="container">
+        <!-- 标题卡片 -->
+        <div class="card fade-in-section" id="card1">
+            <h1>元旦快乐</h1>
+            <p class="subtitle">请坐好小板凳，慢慢享用</p>
+            <p>在这个二十来岁的年纪，我们都在经历着成长的喜悦与迷茫。</p>
+            <p>我们是彼此生命中的同行者，相遇相知相识。</p>
+
+            <!-- 倒计时 -->
+            <div class="countdown" id="countdown">
+                <div class="countdown-number" id="days">--</div>
+                <div class="countdown-label">天</div>
+                <div class="countdown-number" id="hours">--</div>
+                <div class="countdown-label">时</div>
+                <div class="countdown-number" id="minutes">--</div>
+                <div class="countdown-label">分</div>
+                <div class="countdown-number" id="seconds">--</div>
+                <div class="countdown-label">秒</div>
+            </div>
+            <p style="font-size: 0.9rem; opacity: 0.8; margin-top: 1rem;">✨ 距离我们的新年还有...</p>
+        </div>
+
+        <!-- 我们的故事 -->
+        <div class="card fade-in-section" id="card2">
+            <h2 style="color: var(--soft-gold); margin-bottom: 1.5rem; font-size: 1.8rem;">💫 我们的故事</h2>
+            <p>还记得我们第一次见面时，那个暑假当时还蛮好奇的，第一次见面的印象就是挺好看的</p>
+            <p>笑容灿烂得像春天的樱花一样。</p>
+            <p class="highlight">从那一刻起，命运使然，慢慢多了接触，想送一个不一样的礼物。</p>
+
+            <!-- 时间线 -->
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-year">相识的日子</div>
+                    <div class="timeline-content">还记得早上巨冷，骑个小电炉，酷酷去练车，天气真的超冷吧</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">一起的时候</div>
+                    <div class="timeline-content">聊的很来，那时候还挺多的，感觉很开心</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">后面的一段时间</div>
+                    <div class="timeline-content">你的课程好严，但是感觉好有意思，我不是很懂，但是感觉超级厉害，很有趣</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">A one-of-a-kind gift</div>
+                    <div class="timeline-content">但是想送一个不一样的礼物，但是不知道应该送什么，后来想了想，做了一份这个肯定独一无二了吧，其实我原本想再做一个类似于照片八音盒的，留在下一次吧</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 你的美好 -->
+        <div class="card fade-in-section" id="card3">
+            <h2 style="color: var(--soft-gold); margin-bottom: 1.5rem; font-size: 1.8rem;">✨ 你所有的美好</h2>
+            <p>你知道吗？有时候我看着你，</p>   
+            <p>就会觉得这个世界真的是温柔的。</p>
+            <p class="highlight">你的笑容、你的坚持、你的善良，都让我相信美好是存在的。</p>
+
+            <!-- 美好特质（更含蓄的文字/符号替代图标） -->
+            <div class="photo-wall">
+                <div class="photo-item" title="表情1">
+                    <div class="polaroid-img">😄</div>
+                    <div class="polaroid-caption">开心</div>
+                </div>
+                <div class="photo-item" title="表情2">
+                    <div class="polaroid-img">😁</div>
+                    <div class="polaroid-caption">快乐</div>
+                </div>
+                <div class="photo-item" title="表情3">
+                    <div class="polaroid-img">😅</div>
+                    <div class="polaroid-caption">无语嘻嘻</div>
+                </div>
+                <div class="photo-item" title="表情4">
+                    <div class="polaroid-img">😊</div>
+                    <div class="polaroid-caption">微笑</div>
+                </div>
+                <div class="photo-item" title="表情5">
+                    <div class="polaroid-img">😍</div>
+                    <div class="polaroid-caption">喜欢</div>
+                </div>
+                <div class="photo-item" title="表情6">
+                    <div class="polaroid-img">😇</div>
+                    <div class="polaroid-caption">略略略</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2025的心愿 -->
+        <div class="card fade-in-section" id="card4">
+            <h2 style="color: var(--dusty-rose); margin-bottom: 1.5rem; font-size: 1.8rem;">🎯 2025年的心愿</h2>
+            <p style="font-size: 1.1rem;">新的一年，我想对你说：</p>
+            <p style="font-size: 1.1rem;">愿你所有的梦想都能开花结果，</p>
+            <p class="highlight" style="font-size: 1.1rem;">愿你永远被爱包围，被幸福环绕。</p>
+
+            <!-- 心愿清单 -->
+            <div class="wishlist">
+                <div class="wish-item">
+                    <div class="wish-checkbox" onclick="toggleWish(this)"></div>
+                    <div class="wish-text">愿你新的一天，天天开心，事事顺心</div>
+                </div>
+                <div class="wish-item">
+                    <div class="wish-checkbox" onclick="toggleWish(this)"></div>
+                    <div class="wish-text">愿你的事业一帆风顺，充满成就感</div>
+                </div>
+                <div class="wish-item">
+                    <div class="wish-checkbox" onclick="toggleWish(this)"></div>
+                    <div class="wish-text">愿你保持那份纯真，永远相信美好</div>
+                </div>
+                <div class="wish-item">
+                    <div class="wish-checkbox" onclick="toggleWish(this)"></div>
+                    <div class="wish-text">愿你身体健康，每天都元气满满</div>
+                </div>
+                <div class="wish-item">
+                    <div class="wish-checkbox" onclick="toggleWish(this)"></div>
+                    <div class="wish-text">愿我们的友谊天长地久，永远温暖</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 最后的祝福 -->
+        <div class="card fade-in-section" id="card5">
+            <h2 style="color: var(--soft-gold); margin-bottom: 1.5rem; font-size: 1.8rem;">💫 最后的祝福</h2>
+            <p style="font-size: 1.2rem; color: var(--misty-rose); font-weight: 300;">亲爱的朋友，</p>
+            <p>在这个二十来岁的年纪，我们都在经历着成长的喜悦与迷茫，</p>
+            <p>但有你这样的朋友在身边，</p>
+            <p>我觉得一切都变得温柔起来。</p>
+            <p class="highlight" style="font-size: 1.2rem; margin-top: 1rem;">新年快乐！愿你被全世界温柔以待。</p>
+            <p style="margin-top: 2rem; font-size: 0.9rem; opacity: 0.7;">✨ 用心制作，至于为啥到这结束了，当然是想留个悬念啦，嘻嘻 ✨</p>
+        </div>
+    </div>
+
+    <!-- 音频控制按钮 -->
+    <div class="audio-control" id="audioControl" title="点击播放背景音乐"></div>
+
+    <!-- 礼物盒 -->
+    <div class="gift-container">
+        <div class="gift-box" id="giftBox" title="点击打开惊喜">
+            <div class="gift-particles" id="giftParticles"></div>
+        </div>
+    </div>
+
+    <!-- 温馨提示 -->
+    <div class="hint-message" id="hintMessage">
+        <p>💫 亲爱的朋友，慢慢往下看哦，每一个字都写满了我的心意 💫</p>
+    </div>
+
+    <!-- 背景音乐 (Base64编码的轻音乐) -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="data:audio/mpeg;base64,/+MYxAAAAANIAAAAAExBTUUzLjk4LjIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // 生成星星背景
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const numberOfStars = 50;
+
+            for (let i = 0; i < numberOfStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 3 + 1 + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // 生成心形浮动效果（改为更小、更含蓄的符号）
+        function createHearts() {
+            const heartsContainer = document.getElementById('hearts');
+            const numberOfHearts = 8;
+
+            // 使用小星星/花瓣符号，更含蓄且与极光/樱花主题协调
+            const heartSymbols = ['✦', '✧', '❀', '✺'];
+
+            for (let i = 0; i < numberOfHearts; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                heart.style.left = (5 + Math.random() * 90) + '%';
+                // 保持小字号，低调优雅
+                heart.style.fontSize = (0.8 + Math.random() * 0.6) + 'rem';
+                heart.style.animationDelay = Math.random() * 6 + 's';
+                heart.style.animationDuration = (Math.random() * 4 + 8) + 's';
+                heartsContainer.appendChild(heart);
+            }
+        }
+
+        // 生成气泡效果
+        function createBubbles() {
+            const bubblesContainer = document.getElementById('bubbles');
+            const numberOfBubbles = 15;
+
+            for (let i = 0; i < numberOfBubbles; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                bubble.style.left = Math.random() * 100 + '%';
+                bubble.style.width = Math.random() * 20 + 10 + 'px';
+                bubble.style.height = bubble.style.width;
+                bubble.style.animationDelay = Math.random() * 6 + 's';
+                bubble.style.animationDuration = (Math.random() * 4 + 6) + 's';
+                bubblesContainer.appendChild(bubble);
+            }
+        }
+
+        // 2025年倒计时
+        function updateCountdown() {
+            const now = new Date();
+            const targetDate = new Date('2026-01-01T00:00:00');
+            const timeDiff = targetDate - now;
+
+            if (timeDiff > 0) {
+                const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+                document.getElementById('days').textContent = days.toString().padStart(2, '0');
+                document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+                document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+                document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+            } else {
+                // 2025年已到来
+                document.getElementById('countdown').innerHTML = '<div class="countdown-number" style="font-size: 2rem;">2025年</div><div class="countdown-label">已到来</div>';
+            }
+        }
+
+        // 愿望清单交互
+        function toggleWish(checkbox) {
+            checkbox.classList.toggle('checked');
+            const wishItem = checkbox.parentElement;
+            wishItem.style.transform = checkbox.classList.contains('checked') ?
+                'scale(1.02)' : 'scale(1)';
+        }
+
+        // 礼物盒动画
+        function createGiftParticles() {
+            const particlesContainer = document.getElementById('giftParticles');
+            particlesContainer.innerHTML = '';
+
+            for (let i = 0; i < 12; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+
+                // 随机方向
+                const angle = (i / 12) * Math.PI * 2;
+                const distance = 100 + Math.random() * 50;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+
+                particle.style.setProperty('--tx', tx + 'px');
+                particle.style.setProperty('--ty', ty + 'px');
+                particle.style.animationDelay = Math.random() * 0.5 + 's';
+
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // 樱花粒子系统
+        const canvas = document.getElementById('sakuraCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const petals = [];
+        const TOTAL_PETALS = 35;
+
+        class Petal {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height - canvas.height;
+                this.size = Math.random() * 12 + 8;
+                this.speed = Math.random() * 1.2 + 0.3;
+                this.sway = Math.random() * 1.5 + 0.5;
+                this.swaySpeed = Math.random() * 0.015 + 0.005;
+                this.angle = 0;
+                this.rotation = Math.random() * 360;
+                this.rotationSpeed = Math.random() * 0.8 - 0.4;
+                this.opacity = Math.random() * 0.4 + 0.4;
+                this.depth = Math.random(); // 景深
+            }
+
+            update() {
+                this.y += this.speed * (1 + this.depth * 0.5); // 景深影响速度
+                this.angle += this.swaySpeed;
+                this.x += Math.sin(this.angle) * this.sway * (1 - this.depth * 0.3);
+                this.rotation += this.rotationSpeed;
+
+                if (this.y > canvas.height + 50) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation * Math.PI / 180);
+                ctx.globalAlpha = this.opacity;
+
+                // 根据景深调整大小和模糊
+                const scale = 0.7 + this.depth * 0.6;
+                ctx.scale(scale, scale);
+
+                if (this.depth > 0.7) {
+                    ctx.filter = 'blur(1px)';
+                }
+
+                // 绘制花瓣形状
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(8, -8, 16, 0, 0, 16);
+                ctx.bezierCurveTo(-16, 0, -8, -8, 0, 0);
+
+                // 使用莫兰迪色系
+                const colors = ['#ffe4e1', '#f8e8e8', '#f0e0e0'];
+                ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
+                ctx.fill();
+
+                ctx.restore();
+            }
+        }
+
+        // 初始化花瓣
+        for (let i = 0; i < TOTAL_PETALS; i++) {
+            petals.push(new Petal());
+        }
+
+        // 樱花动画循环
+        function animateSakura() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            petals.forEach(petal => {
+                petal.update();
+                petal.draw();
+            });
+            requestAnimationFrame(animateSakura);
+        }
+
+        animateSakura();
+
+        // 滚动显现效果
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.3,
+            rootMargin: '0px 0px -100px 0px'
+        });
+
+        document.querySelectorAll('.fade-in-section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // 鼠标跟随效果
+        const cursorContainer = document.getElementById('cursor-container');
+        let cursorTrails = [];
+        let mouseX = 0, mouseY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+
+            // 创建鼠标跟随粒子
+            const trail = document.createElement('div');
+            trail.className = 'cursor-trail';
+            trail.style.left = mouseX - 3 + 'px';
+            trail.style.top = mouseY - 3 + 'px';
+            cursorContainer.appendChild(trail);
+
+            cursorTrails.push(trail);
+
+            // 移除旧的粒子
+            if (cursorTrails.length > 8) {
+                const oldTrail = cursorTrails.shift();
+                oldTrail.remove();
+            }
+
+            // 动画效果
+            setTimeout(() => {
+                trail.style.opacity = '0';
+                setTimeout(() => trail.remove(), 300);
+            }, 100);
+        });
+
+        // 点击涟漪效果
+        document.addEventListener('click', (e) => {
+            const ripple = document.createElement('div');
+            ripple.className = 'ripple';
+            ripple.style.left = e.clientX - 25 + 'px';
+            ripple.style.top = e.clientY - 25 + 'px';
+            document.body.appendChild(ripple);
+
+            setTimeout(() => ripple.remove(), 1000);
+        });
+
+        // 音频控制（使用 WebAudio 合成一个温柔的背景 pad，避免外部依赖）
+        const audioControl = document.getElementById('audioControl');
+        let isPlaying = false;
+        let audioCtx = null;
+        let padGain = null;
+        let padOsc1 = null;
+        let padOsc2 = null;
+        let padFilter = null;
+        let lfo = null;
+
+        function createPad() {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            padGain = audioCtx.createGain();
+            padGain.gain.value = 0.0;
+            padGain.connect(audioCtx.destination);
+
+            padFilter = audioCtx.createBiquadFilter();
+            padFilter.type = 'lowpass';
+            padFilter.frequency.value = 1200;
+            padFilter.Q.value = 0.7;
+            padFilter.connect(padGain);
+
+            padOsc1 = audioCtx.createOscillator();
+            padOsc1.type = 'sine';
+            padOsc1.frequency.value = 220;
+            padOsc1.detune.value = -10;
+            padOsc1.connect(padFilter);
+
+            padOsc2 = audioCtx.createOscillator();
+            padOsc2.type = 'sine';
+            padOsc2.frequency.value = 277.18; // slightly detuned interval
+            padOsc2.detune.value = 10;
+            padOsc2.connect(padFilter);
+
+            // LFO to modulate filter for movement
+            lfo = audioCtx.createOscillator();
+            const lfoGain = audioCtx.createGain();
+            lfo.type = 'sine';
+            lfo.frequency.value = 0.07;
+            lfoGain.gain.value = 300;
+            lfo.connect(lfoGain);
+            lfoGain.connect(padFilter.frequency);
+
+            padOsc1.start();
+            padOsc2.start();
+            lfo.start();
+        }
+
+        function startPad() {
+            if (!audioCtx) createPad();
+            const now = audioCtx.currentTime;
+            padGain.gain.cancelScheduledValues(now);
+            padGain.gain.setValueAtTime(0.0001, now);
+            padGain.gain.exponentialRampToValueAtTime(0.06, now + 1.2);
+        }
+
+        function stopPad() {
+            if (!audioCtx) return;
+            const now = audioCtx.currentTime;
+            padGain.gain.cancelScheduledValues(now);
+            padGain.gain.setValueAtTime(padGain.gain.value, now);
+            padGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
+            // do not close context to allow restart quickly
+        }
+
+        audioControl.addEventListener('click', async () => {
+            if (!isPlaying) {
+                // 启动音频（需用户手势）
+                try {
+                    startPad();
+                } catch (e) {
+                    console.warn('音频启动失败', e);
+                }
+                audioControl.classList.add('playing');
+                // 樱花短暂加速作为反馈
+                petals.forEach(p => p.speed *= 1.5);
+                setTimeout(() => petals.forEach(p => p.speed /= 1.5), 3000);
+            } else {
+                stopPad();
+                audioControl.classList.remove('playing');
+            }
+            isPlaying = !isPlaying;
+        });
+
+        // 时间线动画观察器
+        const timelineObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, index * 200);
+                }
+            });
+        }, {
+            threshold: 0.5,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        // 愿望清单动画观察器
+        const wishObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, index * 150);
+                }
+            });
+        }, {
+            threshold: 0.5,
+            rootMargin: '0px 0px -30px 0px'
+        });
+
+        // 照片墙动画观察器
+        const photoObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, index * 100);
+                }
+            });
+        }, {
+            threshold: 0.3,
+            rootMargin: '0px 0px -20px 0px'
+        });
+
+        // 礼物盒点击事件
+        const giftBox = document.getElementById('giftBox');
+        let giftClicked = false;
+
+        giftBox.addEventListener('click', () => {
+            if (!giftClicked) {
+                giftClicked = true;
+                giftBox.classList.add('clicked');
+                createGiftParticles();
+
+                // 添加一些惊喜文字
+                setTimeout(() => {
+                    const surpriseText = document.createElement('div');
+                    surpriseText.textContent = '🎉 惊喜！ 🎉';
+                    surpriseText.style.cssText = `
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        font-size: 2rem;
+                        color: var(--misty-rose);
+                        z-index: 100;
+                        pointer-events: none;
+                        animation: fadeInOut 2s ease;
+                        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+                    `;
+                    document.body.appendChild(surpriseText);
+
+                    setTimeout(() => surpriseText.remove(), 2000);
+                }, 500);
+            }
+        });
+
+        // 最后的惊喜动画
+        function triggerFinalSurprise() {
+            // 增加樱花数量
+            petals.length = 0;
+            for (let i = 0; i < TOTAL_PETALS * 2; i++) {
+                petals.push(new Petal());
+            }
+
+            // 显示爱心雨
+            const heartRain = document.createElement('div');
+            heartRain.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 30;
+                pointer-events: none;
+                background: radial-gradient(circle, rgba(255,228,225,0.1) 0%, transparent 70%);
+            `;
+
+            for (let i = 0; i < 20; i++) {
+                const heart = document.createElement('div');
+                // 使用小符号作为雨滴，语气更含蓄
+                heart.textContent = ['♡', '❥', '❤', '❦'][Math.floor(Math.random() * 4)];
+                heart.style.cssText = `
+                    position: absolute;
+                    left: ${Math.random() * 100}%;
+                    font-size: ${0.9 + Math.random() * 0.9}rem;
+                    animation: heart-fall ${Math.random() * 2 + 3}s linear forwards;
+                    opacity: 0.5;
+                `;
+                heartRain.appendChild(heart);
+            }
+
+            document.body.appendChild(heartRain);
+
+            setTimeout(() => heartRain.remove(), 5000);
+        }
+
+        // 监听最后一张卡片的显示
+        const finalCardObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.dataset.surpriseTriggered) {
+                    entry.target.dataset.surpriseTriggered = 'true';
+                    setTimeout(triggerFinalSurprise, 1000);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        // 页面加载后绑定观察器
+        setTimeout(() => {
+            finalCardObserver.observe(document.getElementById('card5'));
+        }, 1000);
+
+        // 页面加载时的初始化
+        window.addEventListener('load', () => {
+            createStars();
+            createHearts();
+            createBubbles();
+
+            // 初始化观察器
+            document.querySelectorAll('.timeline-item').forEach(item => {
+                timelineObserver.observe(item);
+            });
+
+            document.querySelectorAll('.wish-item').forEach(item => {
+                wishObserver.observe(item);
+            });
+
+            document.querySelectorAll('.photo-item').forEach(item => {
+                photoObserver.observe(item);
+            });
+
+            // 启动倒计时
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+
+            // 入场动画
+            setTimeout(() => {
+                document.getElementById('card1').classList.add('visible');
+            }, 500);
+        });
+
+        // 防抖处理
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(resizeCanvas, 250);
+        });
+
+        // 添加CSS动画
+        const style = document.createElement('style');
+        style.textContent = `
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        @keyframes heart-fall {
+            0% {
+                transform: translateY(-10px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
