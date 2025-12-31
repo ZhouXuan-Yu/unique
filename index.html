@@ -768,7 +768,7 @@
 
         
         <div class="card fade-in-section" id="card4">
-            <h2 style="color: var(--dusty-rose); margin-bottom: 1.5rem; font-size: 1.8rem;">我希望---</h2>
+            <h2 style="color: var(--dusty-rose); margin-bottom: 1.5rem; font-size: 1.8rem;">我希望</h2>
             <p style="font-size: 1.1rem;">新的一年，我想对你说：</p>
             <p style="font-size: 1.1rem;">愿你所有的梦想都能开花结果，</p>
             <p class="highlight" style="font-size: 1.1rem;">愿你永远被爱包围，被幸福环绕。</p>
@@ -903,12 +903,16 @@
                 document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
                 document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
             } else {
-                // 2come on
-                document.getElementById('countdown').innerHTML = '<div class="countdown-number" style="font-size: 2rem;">元旦</div><div class="countdown-label">来喽</div>''<div class="countdown-number" style="font-size: 2rem;">元旦</div><div class="countdow
+                // 倒计时已到
+                document.getElementById('countdown').innerHTML = '<div class="countdown-number" style="font-size: 2rem;">元旦</div><div class="countdown-label">来喽</div>';
+            }
+        }
+
+        // 愿望清单交互
+        function toggleWish(checkbox) {
             checkbox.classList.toggle('checked');
             const wishItem = checkbox.parentElement;
-            wishItem.style.transform = checkbox.classList.contains('checked') ?
-                'scale(1.02)' : 'scale(1)';
+            wishItem.style.transform = checkbox.classList.contains('checked') ? 'scale(1.02)' : 'scale(1)';
         }
 
         // 礼物盒动画
@@ -1356,5 +1360,4 @@
     </script>
 </body>
 </html>
-
 
