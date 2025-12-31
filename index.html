@@ -766,14 +766,14 @@
             </div>
         </div>
 
-        <!-- 2025的心愿 -->
+        
         <div class="card fade-in-section" id="card4">
-            <h2 style="color: var(--dusty-rose); margin-bottom: 1.5rem; font-size: 1.8rem;">我希望--->wo'x
+            <h2 style="color: var(--dusty-rose); margin-bottom: 1.5rem; font-size: 1.8rem;">我希望---</h2>
             <p style="font-size: 1.1rem;">新的一年，我想对你说：</p>
             <p style="font-size: 1.1rem;">愿你所有的梦想都能开花结果，</p>
             <p class="highlight" style="font-size: 1.1rem;">愿你永远被爱包围，被幸福环绕。</p>
 
-            <!-- 心愿清单 -->
+            <!-- todo待补充 -->
             <div class="wishlist">
                 <div class="wish-item">
                     <div class="wish-checkbox" onclick="toggleWish(this)"></div>
@@ -869,7 +869,7 @@
             }
         }
 
-        // 生成气泡效果
+        // 加点小气泡，她应该会喜欢吧
         function createBubbles() {
             const bubblesContainer = document.getElementById('bubbles');
             const numberOfBubbles = 15;
@@ -886,7 +886,7 @@
             }
         }
 
-        // 2025年倒计时
+        // 倒计时
         function updateCountdown() {
             const now = new Date();
             const targetDate = new Date('2026-01-01T00:00:00');
@@ -903,13 +903,8 @@
                 document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
                 document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
             } else {
-                // 2025年已到来
-                document.getElementById('countdown').innerHTML = '<div class="countdown-number" style="font-size: 2rem;">2025年</div><div class="countdown-label">已到来</div>';
-            }
-        }
-
-        // 愿望清单交互
-        function toggleWish(checkbox) {
+                // 2come on
+                document.getElementById('countdown').innerHTML = '<div class="countdown-number" style="font-size: 2rem;">元旦</div><div class="countdown-label">来喽</div>''<div class="countdown-number" style="font-size: 2rem;">元旦</div><div class="countdow
             checkbox.classList.toggle('checked');
             const wishItem = checkbox.parentElement;
             wishItem.style.transform = checkbox.classList.contains('checked') ?
